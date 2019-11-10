@@ -1,5 +1,0 @@
-pandas==0.25.1
-requests==2.22.0
-google-cloud==0.34.0
-google-cloud-bigquery==1.19.0
-pyarrow==0.15.0
