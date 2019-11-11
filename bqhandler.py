@@ -7,7 +7,7 @@ class BQTableHanler:
     """Класс для работы с таблицей BigQuery"""
     time_partition_field = 'PARTITION_DATE'
     def __init__(self, full_table_id, service_account_file_key_path = None):
-        """Констркутор принимает название таблицы в формате
+        """Констркутор принимает полное название таблицы в формате
         `myproject.mydataset.mytable`.
 
         Для аутентификации, если нет Application Default Credentials,
@@ -19,7 +19,7 @@ class BQTableHanler:
         self.dataset_id = dataset_id
         self.table_id = table_id
 
-        if service_account_file_key_path: #если укзан путь к сервисному аккаунту
+        if service_account_file_key_path: #если указан путь к сервисному аккаунту
             from google.oauth2 import service_account
             self.credentials = service_account.Credentials.from_service_account_file(
                         service_account_file_key_path,
@@ -34,7 +34,7 @@ class BQTableHanler:
 
     def get_last_update(self):
         """Получает дату последнего звонка из таблицы в формате
-        Pandas datetime. Если таблицы не существует, возвращает False."""
+        Pandas datetime. Если таблицы не существует возвращает False."""
         try:
             self.bq_client.get_table(self.full_table_id)
         except NotFound as error:

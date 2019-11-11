@@ -5,7 +5,11 @@ from credfile import *
 
 def main(event, context):
     """Функция принимает на вход event, context, которые получает от
-    PUB/SUB"""
+    PUB/SUB. """
+
+    #import base64
+    #pubsub_message = base64.b64decode(event['data']).decode('utf-8')
+
     #создает имточник данных и место назначения данных
     comagic_handler = ComagicHandler(COMAGIC_LOGIN, COMAGIC_PASSWORD, FIRST_CALL_DATE)
     bq_handelr = BQTableHanler(full_table_id, google_credintials_key_path)

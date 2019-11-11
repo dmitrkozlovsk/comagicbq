@@ -7,7 +7,7 @@ import pandas as pd
 class ComagicClient:
     """Базовый класс для работы с CoMagic"""
     def __init__(self, login, password):
-        """Конструктор принимает логин и пароль для в CoMagic"""
+        """Конструктор принимает логин и пароль CoMagic"""
         self.login = login
         self.password = password
         self.base_url = 'https://dataapi.comagic.ru/v2.0'
@@ -17,7 +17,7 @@ class ComagicClient:
                          "params": None}
         self.token = self.get_token(self.login, self.password)
     def base_request(self, method, params):
-        """Главный метод для клиента. В качестве параметра принимает метод API
+        """Основной метод для запросов в CoMagic. В качестве параметра принимает метод API
         и параметры запроса. Возвращает ответ от в JSON-like формате.
         Подбробнее: https://www.comagic.ru/support/api/data-api/"""
         id_ = random.randrange(10**7) #случайный идентификатор
@@ -30,20 +30,17 @@ class ComagicClient:
         return self.last_response
     def get_token(self, login, password):
         """Метод для получения токена. В качестве параметров принимает
-        логин и пароль.
-
-        Возвращает токен."""
+        логин и пароль. Возвращает токен."""
         method = "login.user"
         params = {"login":self.login,
-        "password":self.password}
+                  "password":self.password}
         response = self.base_request(method, params)
         token = response['result']['data']['access_token']
         return token
     def get_report_per_page(self, method, params):
         """Реализация постраничного вывода. Отправляет запрос и получает
         по 10000 записей. Есть ограничение на вывод.
-        Не может получить более 110000 записейю
-
+        Не может получить более 110000 записей.
         Возвращает ответ от в JSON-like формате."""
         response = self.base_request(method, params)
         print(f"""Запрос звонков c {params["date_from"]} до {params["date_till"]}. Сдвиг = {params["offset"]}""")
@@ -58,7 +55,7 @@ class ComagicClient:
         """Метод для получения отчетов.
         Вид отчета и поля определются параметрами method и fields.
         Возвращает список словарей с записями по звонкам.
-        В качестве параметров принимает вермя начала периода,
+        В качестве параметров принимает время начала периода,
         время конца периода, параметры звонка и сдвиг для постраничного вывода.
 
         method -- <string> метод отчета
@@ -94,8 +91,7 @@ class ComagicHandler(ComagicClient):
 
         Преобразовывает данные в Pandas DataFrame.
         Создает колонку для партицирования по дням. Название колонки полчает из
-        класса Connector или берет по умолчанию PARTITION_DATE.
-
+        класса Connector или берет по умолчанию.
         Преобразовывает колонку с тегами. Оставляет только название тегов.
 
         Возвращет Pnadas.DataFrame"""
@@ -112,13 +108,13 @@ class ComagicHandler(ComagicClient):
                  'eq_utm_campaign', 'attributes']
 
 
-        #Получаем данные из CoMagic
+        #Получение данных из CoMagic
         calls_data = self.get_basic_report(method, fields, date_from, date_till)
-        #Создаем DataFrame
+        #Создание DataFrame
         df = pd.DataFrame(calls_data)
-        #Создаем поле с датой звонка. Поле используется для партицирования.
+        #Создание поля с датой звонка. Поле используется для партицирования.
         df[self.time_partition_field] = pd.to_datetime(df.start_time).apply(lambda x: x.date())
-        #Преобразуем поле tags, так как BigQuery не может работать с таким типом данных, который
+        #Преобразование поле tags, так как BigQuery не может работать с таким типом данных, который
         #отдает CoMagic. Оставляем только название тэгов.
         df['tags'] = df.tags.apply(lambda x: x if x == None else [i['tag_name'] for i in x])
         return df
