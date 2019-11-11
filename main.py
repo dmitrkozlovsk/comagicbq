@@ -4,8 +4,9 @@ from comagichandler import ComagicHandler
 from credfile import *
 
 def main(event, context):
-    """Функция принимает на вход event, context, которые получает от
-    PUB/SUB. """
+    """Функция принимает на вход event, context
+    Подбробнее тут:
+    https://cloud.google.com/functions/docs/writing/background#functions-writing-background-hello-pubsub-python"""
 
     #import base64
     #pubsub_message = base64.b64decode(event['data']).decode('utf-8')
